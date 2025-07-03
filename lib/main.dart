@@ -17,9 +17,21 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(),//vest un attribut pour la page default de l'appli
+      //home: MyHomePage(),//vest un attribut pour la page default de l'appli
+      initialRoute: "/",
+      routes: MyRoute.getRoutes(context),//liste des pages connue par l'appli avec son l'URL pour navigeur
     );
   }
+}
+
+class MyRoute {
+  Map<String, WidgetBuilder> getRoutes(BuildContext context){
+    return {
+      "/" : (context)=> MyHomePage(),
+      "/page-two" :(context)=>PageTwo()
+    };
+  }
+
 }
 
 //Demo Layout Widget
@@ -139,7 +151,7 @@ class _DemoFormState extends State<DemoForm>{
 //===================================================================
 
 //Demo_formulaire_module7 2 ajouter la validation==========================================
-
+/*
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -218,4 +230,41 @@ class _DemoFormState extends State<DemoForm>{
             ElevatedButton(onPressed: onSubmit, child: Text("Submit!!"))
     ],));
   }
+}
+ */
+//============================================================================
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(//une Scaffold = une page de material design
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text("Ma page"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Text("hiroe"),
+            ElevatedButton(onPressed: (){
+              Navigator.pushNamed(context, "/page-two");
+            }, child: Text("Ouvitrir page 2"))
+          ],
+        ),
+      )
+    );
+  }
+}
+
+//page pile
+class PageTwo extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Page two"),
+      ),
+      body: Center(
+        child: Text("To do page two"),)
+      );
+    }
 }
