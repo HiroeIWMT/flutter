@@ -297,18 +297,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Movie? movie;//il est nullable
+  //Movie? movie;//il est nullable, version un seul film
+  List<Movie> movies = []; //a la place de nullable, le cas de Liste, on met le vide par defaut
 
   void callApi() async{
+   //0.Vider le list
+   setState(() {
+     movies = [];
+   });
+
+
+   //0.Attendre i2sec
+   await Future.delayed(Duration(seconds: 2));
   //1.Appeler un point d'entree sur un serveur
-  var response = await http.get(Uri.parse("https://raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/movie.json"));
+  //var response = await http.get(Uri.parse("https://raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/movie.json"));
+  var response = await http.get(Uri.parse("https://jsonplaceholder.typicode.com/posts"));
   //2.Transformer, convertir la reponse du serveur en json
   if(response.statusCode == 200){
     var json = convert.jsonDecode(response.body);
     //3.Transformer le json en objet = en Movie
     setState(() {
-      movie = Movie.fromJson(json);
-      print(movie!.title);
+      //movie = Movie.fromJson(json);
+      movies = List<Movie>.from(json.map((movieJson) => Movie.fromJson(movieJson))); //map=>foreach implicite
     });
 
     }
@@ -324,8 +334,17 @@ class _MyHomePageState extends State<MyHomePage> {
       body:Center(
         child: Column(
           children: [
-            Text("Le film est : ${movie?.title}"),
-            ElevatedButton(onPressed: callApi, child: Text("appele Api"))
+            ElevatedButton(onPressed: callApi, child: Text("appele Api")),
+           Expanded(
+             child: ListView.builder(
+               itemCount: movies.length,
+                 itemBuilder: (BuildContext context, int index){
+               return Container(
+                 height: 50,
+                 child:Text("Le film est : ${movies[index].title}"),
+               );
+             }),
+           ),
           ],
         )
       ),
