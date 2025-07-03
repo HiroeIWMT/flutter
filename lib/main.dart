@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;//API module9
+import 'dart:convert' as convert;
 
 void main() {
   runApp(const MyApp());
@@ -17,13 +19,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //home: MyHomePage(),//vest un attribut pour la page default de l'appli
-      initialRoute: "/",
-      routes: MyRoute.getRoutes(context),//liste des pages connue par l'appli avec son l'URL pour navigeur
+      home: MyHomePage(),//vest un attribut pour la page default de l'appli
+      //initialRoute: "/",
+      //routes: MyRoute.getRoutes(context),//liste des pages connue par l'appli avec son l'URL pour navigeur
     );
   }
 }
-
+/*module8 Routes
 class MyRoute {
   Map<String, WidgetBuilder> getRoutes(BuildContext context){
     return {
@@ -33,7 +35,7 @@ class MyRoute {
   }
 
 }
-
+ */
 //Demo Layout Widget
 /*
 class MyHomePage extends StatelessWidget {
@@ -233,6 +235,8 @@ class _DemoFormState extends State<DemoForm>{
 }
  */
 //============================================================================
+//Module8 Routes
+/*
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -268,3 +272,66 @@ class PageTwo extends StatelessWidget{
       );
     }
 }
+
+ */
+//==========================================================================
+//Module9 API web service
+class Movie{
+  int id;
+  String title;
+  String description;
+//
+
+  Movie(this.id, this.title, this.description);
+//retrouve une instance de film depuis des données en Json
+  static Movie fromJson(Map<String, dynamic> json){
+    return Movie(json['id'], json['title'], json['description']);
+  }
+}
+
+
+class MyHomePage extends StatefulWidget {
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  Movie? movie;//il est nullable
+
+  void callApi() async{
+  //1.Appeler un point d'entree sur un serveur
+  var response = await http.get(Uri.parse("https://raw.githubusercontent.com/Chocolaterie/EniWebService/main/api/movie.json"));
+  //2.Transformer, convertir la reponse du serveur en json
+  if(response.statusCode == 200){
+    var json = convert.jsonDecode(response.body);
+    //3.Transformer le json en objet = en Movie
+    setState(() {
+      movie = Movie.fromJson(json);
+      print(movie!.title);
+    });
+
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(//une Scaffold = une page de material design
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text("Ma page"),
+      ),
+      body:Center(
+        child: Column(
+          children: [
+            Text("Le film est : ${movie?.title}"),
+            ElevatedButton(onPressed: callApi, child: Text("appele Api"))
+          ],
+        )
+      ),
+    );
+  }
+}
+
+
+
